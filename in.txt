@@ -1,0 +1,27 @@
+#VARIABLES
+
+popMoveFactor = 1.0
+priceLocalResponseFactor = 1.0
+priceTradeResponseFactor = 1.0 
+tradeMoveFactor = 1.0
+
+
+#GOODS
+-- Name [UtilityParameters] UtilityBase
+Food [0, 1.0] 1.0
+Gold [0.2, 0.3] 0.1
+
+
+#RESOURCES
+-- Name ProducedGood (Population->Production) (Population->d prod / d pop) Retention
+-- The functions should be identifiers specified in Functions.hs
+Farm Food id pure1 1.0
+Mine Gold sq id 5.0
+
+
+#SQUARES
+-- Ref [Resource:Population] [Good:Price] InTrades OutTrades [NeighbourRef:Connection]
+-- Trades have the form [NeighbourRef:[Good:Quantity]]
+-- Connection specifications have the keyword ALL, which is interpreted as all other neighbours
+(0, 0) [Farm:100, Mine:0] [Food:50, Gold:20] [] [] [ALL:1]
+(0, 1) [Farm:100, Mine:0] [Food:50, Gold:20] [] [] [ALL:1]

@@ -62,7 +62,7 @@ initFile = do
     
     let resourceList = map (parseResource goodList) pResourceList
     let iSquareList = map (parseSquare goodList resourceList) pSquareList
-    let squareList = map (linkNeighbours iSquareList) iSquareList
+    let squareList = map (padGoods goodList) . map (linkNeighbours iSquareList) $ iSquareList
     
     return $ World squareList varList
   
@@ -236,3 +236,19 @@ resolveTrades gl tl = map (\(ref, trades) -> (read ref :: SquareRef, map (\(g, t
 makeNeighbour :: ISquare -> Neighbour
 makeNeighbour iSquare =
     Neighbour (iSqRef iSquare) (iSqPrices iSquare) (iSqTradeOut iSquare)
+    
+
+padGoods :: [Good] -> Square -> Square
+padGoods goodList sq = 
+    let gL = goodList
+        nL = map neighRef . map fst . sqNeighbours $ sq
+        padGoodQ gQ = (gQ ++) . map (\g -> (g, 0))  . filter (\g -> not . elem g . map fst $ gQ) $ gL
+        addNeigh tQ = (tQ ++) . map (\r -> (r, [])) . filter (\r -> not . elem r . map fst $ tQ) $ nL
+        padTrade tQ = map (\(n, gQ) -> (n, padGoodQ gQ)) . addNeigh $ tQ
+        padNeigh ne = ne { neighPrices = padGoodQ $ neighPrices ne,  neighTradeOut = padTrade $ neighTradeOut ne }
+        padNeighs nes = map (\(ne, c) -> (padNeigh ne, c)) nes
+    in sq { sqPrices = padGoodQ $ sqPrices sq
+          , sqTradeIn = padTrade $ sqTradeIn sq
+          , sqTradeOut = padTrade $ sqTradeOut sq
+          , sqNeighbours = padNeighs $ sqNeighbours sq
+          }

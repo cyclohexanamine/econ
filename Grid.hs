@@ -83,11 +83,12 @@ newPrices supplies tradeVs utilities neighbours prices =
                       
 newTradeIn :: SquareRef -> SquareNeighbours -> GoodTrades
 newTradeIn ref neighbours = 
-    let findSelf ref ((r,gq):xs) = if r == ref then gq else findSelf ref xs
+    let findSelf _ [] = []
+        findSelf ref ((r,gq):xs) = if r == ref then gq else findSelf ref xs
     in  map (\(neigh, nc) -> (neighRef neigh, findSelf ref (neighTradeOut neigh))) neighbours
                       
                       
-newTradeOut :: GoodQuantities -> GoodPrices -> SquareNeighbours -> GoodTrades -> Reader WorldState GoodTrades --
+newTradeOut :: GoodQuantities -> GoodPrices -> SquareNeighbours -> GoodTrades -> Reader WorldState GoodTrades
 newTradeOut supplies prices neighbours tradeOut = 
   reader $ \wState ->
     let tradeMoveFactor = paramLK wState "tradeMoveFactor"
@@ -95,7 +96,7 @@ newTradeOut supplies prices neighbours tradeOut =
     
         idealDelta neigh c good = tradeMoveFactor * deltaT * findG0 good supplies * c * ((findG0 good . neighPrices $ neigh) - findG0 good prices)
         totalIDelta good = sum . map (\(neigh, c) -> idealDelta neigh c good) $ neighbours
-        tradeScaleFactor good = let supply = findG0 good supplies; totalD = totalIDelta good in if totalD > 0 then supply / min supply totalD else totalD
+        tradeScaleFactor good = let supply = findG0 good supplies; totalD = totalIDelta good in if totalD > 0 then supply / max supply totalD else 1.0
         
         actualDelta ref good = let c = findNConn neighbours ref
                                    neigh = findNeigh neighbours ref

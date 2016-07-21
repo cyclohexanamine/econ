@@ -109,6 +109,19 @@ newTradeOut supplies prices neighbours tradeOut =
          tradeOut
 
          
+flattenTrade :: GoodTrades -> GoodTrades -> GoodTrades
+flattenTrade tradeIn tradeOut = 
+    let findTrade []          _        = []
+        findTrade ((r,gQs):ts) neighRef = if r == neighRef then gQs else findTrade ts neighRef
+        flatten inT (g, outQ)  = let inQ = findG0 g inT in (g, max (outQ - inQ) 0)
+        
+        inOutTrades = map (\(r, t) -> (r, findTrade tradeIn r, t)) tradeOut
+        newTrades = map (\(r, inT, outT) -> (r, map (flatten inT) outT)) inOutTrades
+    in newTrades
+    
+    
+         
+         
          
 -- OVERALL
          
@@ -125,7 +138,9 @@ updateSquare square = do
     prices <- newPrices supplies tradeVolumes localUtilities (sqNeighbours square) (sqPrices square)
     outTrades <- newTradeOut supplies (sqPrices square) (sqNeighbours square) (sqTradeOut square)
     
-    return $ square { sqPop = pops, sqPrices = prices, sqTradeIn = inTrades, sqTradeOut = outTrades }
+    let flatOutTrades = flattenTrade (sqTradeIn square) outTrades
+    
+    return $ square { sqPop = pops, sqPrices = prices, sqTradeIn = inTrades, sqTradeOut = flatOutTrades }
 
     
     

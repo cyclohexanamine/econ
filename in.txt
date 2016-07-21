@@ -1,9 +1,9 @@
 #VARIABLES
 
 popMoveFactor = 1.0
-priceLocalResponseFactor = 1.0
-priceTradeResponseFactor = 1.0 
-tradeMoveFactor = 1.0
+priceLocalResponseFactor = 0.1
+priceTradeResponseFactor = 0.1 
+tradeMoveFactor = 0.001
 
 
 #GOODS
@@ -24,4 +24,4 @@ Mine Gold sq id 5.0
 -- Trades have the form [NeighbourRef:[Good:Quantity]]
 -- Connection specifications have the keyword ALL, which is interpreted as all other neighbours
 (0, 0) [Farm:100, Mine:0] [Food:50, Gold:20] [] [] [ALL:1]
-(0, 1) [Farm:100, Mine:0] [Food:50, Gold:20] [] [] [ALL:1]
+(0, 1) [Farm:50, Mine:50] [Food:50, Gold:20] [] [] [ALL:1]

@@ -1,9 +1,10 @@
 module Loader (loadConfFile) where
 
-import Text.Parsec
-import Data.List
 import Types
 import Functions
+
+import Data.List
+import Text.Parsec
 
 
 loadConfFile :: String -> IO (Either String World)

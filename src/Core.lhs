@@ -12,7 +12,7 @@ import Control.Monad.Reader
 \section{Overall}
 
 The core algorithm updates a linked grid of economic unit squares all in one.
-Given a valid world state, |updateWorld| will update it one step by a time difference $\Delta T$.
+Given a valid world state, \lstinline|updateWorld| will update it one step by a time difference $\Delta T$.
 
 
 \begin{code}
@@ -27,11 +27,11 @@ We initialise a WorldState object from the environment parameters given, and the
 \begin{code}
     let wState = WorldState (worldParams world) deltaT
 \end{code}
-We update the square's neighbours by a call to |makeNeighbour| - this updates their price and trade information to current.
+We update the square's neighbours by a call to \lstinline|makeNeighbour| - this updates their price and trade information to current.
 \begin{code}
         updateNeighbours square = square { sqNeighbours = map (\(neigh, c) -> (makeNeighbour . findSquare world . neighRef $ neigh, c)) . sqNeighbours $ square }
 \end{code}
-We run |updateSquare| on each square to get the new square list.
+We run \lstinline|updateSquare| on each square to get the new square list.
 \begin{code}
         processUpdateSquare sq = runReader (updateSquare sq) wState
         newSquares = map updateNeighbours . map (processUpdateSquare) . worldSquares $ world

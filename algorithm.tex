@@ -1,0 +1,70 @@
+\documentclass[12pt]{article}
+\usepackage{hyperref}
+\usepackage{listings}
+\lstset{language=Haskell}
+
+\begin{document}
+	
+	\section*{Grid-based economy simulator}
+	The goal of this is to have a fairly simplistic model of economic behaviour that may reproduce large-scale phenomena.
+	For example, we may want cities to emerge from an agrarian setup, given the right conditions, when this behaviour is not explicitly programmed in. We'll outline the basic items of the simulation, and then how they're updated.
+	
+	\section{Objects}
+	
+		\subsection{Square}
+		The model uses a basic unit of a grid square, intended to represent a geographical unit. The spatial arrangement of the grid is uniform, as it is, but could potentially be hierarchical.
+		This unit contains resources, and people (agents) assigned to produce goods from each resource, according to wealth maximisation.
+		It also has a local market for goods, and trade flow with neighbouring squares in each good.
+		
+		It interacts directly with its neighbours only, so the complexity of the model is linear in size. 
+		This doesn't preclude long-distance interactions entirely, since local interactions propagate through the grid, but it won't allow for them to dominate.
+		
+		\subsection{Resource}
+		Each square has `resources', which represent some form of industry, e.g., `farm' or `mine'.
+		People work them, and they produce goods according to a production curve, which differs from square to square. 
+		In most cases, the marginal production - how much production increases if one more person joins in - will initially increase with more people, since co-operation will lead to improved productivity.
+		Eventually, it will start to decrease, as the resource becomes crowded or overworked, and new people can do less and less good.
+	
+		\subsection{Good}
+		We represent the basic units of production as distinct `goods', e.g., `food' or `gold'.
+		This division is arbitrary; we might choose to separate food into `bread' and `fish', or indeed, `bread' and `wheat'.
+		Each good has a local price in each square, and a global utility function.
+		
+		These goods form the basis of the economy: people are occupied in producing and consuming them.
+		The model really concerns itself with good \textit{flow}; goods are not stockpiled at all, but produced and consumed every iteration, and when we talk about the 'supply', we mean the quantity of good per unit time that is available.
+		This is done in the interest of simplicity, because while reserve might be a factor, it's not the dominant one in most economic activity.
+		
+		\subsection{Utility}
+		Each good has a utility curve, which is a function of supply.
+		Utility is how much an agent values having a certain amount of a good, so marginal utility is how much an agent values gaining one unit of a good.
+		In general we have diminishing marginal utility, meaning that as supply increases, the marginal utility of that good will decrease.
+		As it is now, the utility curve for a good is the same globally, which implies that all the agents in the simulation have the same preferences, adjusted for their material situation.
+		
+
+		\subsection{Price}
+		Each good has a local price, represented in arbitrary price units.
+		These units don't necessarily represent currency, but in an economy that has currency they are essentially equivalent.
+		Without considering the effect of foreign squares, the price of a good corresponds to the marginal utility gain of one unit of that good to one person in the population. 
+		The price is also affected by the prices in neighbouring squares; they will tend to even out, given trade volume between them.
+		
+		\subsection{Trade}
+		Goods flow between squares in addition to being consumed locally.
+		This is considered as the action of merchants, who are content as long as they do not make a loss on their trade - i.e., as long as the price of a good in the destination square is not less than at the origin square.
+		Trade responds to these differences in price - a price difference increases or decreases the volume of trade.
+		
+		Between two squares with equal price, the volume of trade will remain constant.
+		This is because the price response due to trade is extremely difficult to calculate exactly - if it weren't, the entire model would be easily solvable analytically.
+		Consequently, we see merchants as increasing their trade volumes for as long as they make money doing so, which is a perfect competition model, more or less.
+		It would be fairly straightforward to add the costs of trading into this, but they're not. 
+		Merchants are also considered extraneous to the square populations, so trade is not an industry, the money they make disappears, and they consume no resources.
+
+		\subsection{World}
+		The entire world really just consists of all the squares in the grid.
+	
+	\section{Updating}
+	The world is updated in discrete steps, each consisting of an arbitrary time duration $\Delta t$. Because the factors of production, utility, price and trade all exhibit rather nonlinear behaviours, the entire system is not easily solvable analytically. But, most of the incremental updates can be modelled as first-order differential equations, with the exception of trade. 
+	
+	
+	
+	
+\end{document}
